@@ -17,14 +17,18 @@ ggl: google.com
 YAML file with several synonyms is attached to the program.
 Users can add/delete data from/to YAML file.
 Create unit tests for key functions.
+    
 Approximate contents of GUI window:
 The combo box with list of available sites is located in the top.
 The field for manual input of a page URL is located under the combobox.
 The buttons "Load" and "Show from DB" are located under the field.
 The row with status is located under the buttons.
+    
 How to run console version:
 To get list of tags: tagcounter --get "yandex.ru"
 Synonyms are accepted by the app. like regular URLs: tagcounter --get "ydx"
+    
 How to get saved data from DB, console version: tagcounter --view "yandex.ru"
+    
 How to design the package:
 The program contains setup.py file in order the package might be built using "sdist" command or using PIP.
