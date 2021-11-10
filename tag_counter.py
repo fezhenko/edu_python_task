@@ -1,5 +1,8 @@
 import requests
+from random import randint
+import pickle
 from bs4 import BeautifulSoup
+import db
 
 HOST = "https://google.by/"
 headers = {
@@ -11,27 +14,37 @@ data = r.content
 soup = BeautifulSoup(data, "html.parser")
 
 
-def define_all_tags_names():
-    # tags_list = []
-    # for tag in soup.find_all(True):
-    #     tags_list += [tag.name]
+def pickling_the_dictionary(x):
+    filename = f"{randint(0, 10000)}_pickle"
+    with open(filename, 'wb') as file:
+        pickle.dump(x, file)
+        file.close()
+    print("Your file is pickled")
+    return filename
 
-    # dict_with_tags_names_and_values = {}
-    # for i in sorted(set(tags_list)):
-    #     dict_with_tags_names_and_values[i] = tags_list.count(i)
-    #     print(f"Number of {i} tags: {str(tags_list.count(i))}")
 
-    tags_list = [tag.name for tag in soup.find_all(True)]
-    dict_with_tags_names_and_values = {i: tags_list.count(i) for i in sorted(set(tags_list))}
-    # print(f"List of all tags: {str(tags_list)}")
-    # print(f"Sorted list of distinct values: {str(sorted(set(tags_list)))}")
-    # print(f"Dict with tags and numbers: {dict_with_tags_names_and_values}")
-
-    return dict_with_tags_names_and_values
+def unpickling_the_dictionary(x):
+    content = open(x, 'rb')
+    pickled_out = pickle.load(content)
+    return pickled_out
 
 
 def total_amount_of_tags():
     return len(soup.find_all())
 
 
+def define_all_tags_names():
+    tags_list = [tag.name for tag in soup.find_all(True)]
+    dict_with_tags_names_and_values = {i: tags_list.count(i) for i in sorted(set(tags_list))}
+    print("Indicator of success")
+    return dict_with_tags_names_and_values
+
+
+db.create_pickle_warehouse()
+pickling_dict = pickling_the_dictionary(define_all_tags_names())
+unpickled_dict = unpickling_the_dictionary(pickling_dict)
+db.add_pickled_dict_to_db(pickling_dict)
+
+
 print(define_all_tags_names())
+print(len(pickling_dict))
