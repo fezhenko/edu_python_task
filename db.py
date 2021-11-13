@@ -38,7 +38,7 @@ def create_pickle_warehouse():
     conn = sqlite3.connect('pickling_dict.db')
     curs = conn.cursor()
     curs.execute("""CREATE TABLE IF NOT EXISTS 'pickle_warehouse' (
-                "pickled_dict" VARCHAR(1000000) PRIMARY KEY)
+                "pickled_dict" VARCHAR(1000) PRIMARY KEY)
                 """)
     conn.commit()
 
@@ -53,3 +53,14 @@ def add_pickled_dict_to_db(d):
     else:
         print("Pickled_dict has been already added to warehouse :)")
     conn.commit()
+
+
+def view():
+    conn = sqlite3.connect('pickling_dict.db')
+    curs = conn.cursor()
+    curs.execute("SELECT * FROM pickle_warehouse")
+    rows = curs.fetchall()
+    conn.close()
+    return rows
+
+

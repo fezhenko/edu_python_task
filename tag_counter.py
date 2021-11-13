@@ -42,9 +42,10 @@ def define_all_tags_names():
 
 db.create_pickle_warehouse()
 pickling_dict = pickling_the_dictionary(define_all_tags_names())
-unpickled_dict = unpickling_the_dictionary(pickling_dict)
 db.add_pickled_dict_to_db(pickling_dict)
+#unpickled_dict = unpickling_the_dictionary(pickling_dict)
 
 
-print(define_all_tags_names())
-print(len(pickling_dict))
+#print(define_all_tags_names())
+#print(len(pickling_dict))
+print(db.view())
