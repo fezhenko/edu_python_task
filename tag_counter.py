@@ -1,8 +1,7 @@
 import requests
-from random import randint
-import pickle
 from bs4 import BeautifulSoup
-import db
+import pickle_the_data
+import backend_db
 
 HOST = "https://google.by/"
 headers = {
@@ -14,21 +13,6 @@ data = r.content
 soup = BeautifulSoup(data, "html.parser")
 
 
-def pickling_the_dictionary(x):
-    filename = f"{randint(0, 10000)}_pickle"
-    with open(filename, 'wb') as file:
-        pickle.dump(x, file)
-        file.close()
-    print("Your file is pickled")
-    return filename
-
-
-def unpickling_the_dictionary(x):
-    content = open(x, 'rb')
-    pickled_out = pickle.load(content)
-    return pickled_out
-
-
 def total_amount_of_tags():
     return len(soup.find_all())
 
@@ -36,16 +20,12 @@ def total_amount_of_tags():
 def define_all_tags_names():
     tags_list = [tag.name for tag in soup.find_all(True)]
     dict_with_tags_names_and_values = {i: tags_list.count(i) for i in sorted(set(tags_list))}
-    print("Indicator of success")
+    print("All tags have been successfully saved as dictionary")
     return dict_with_tags_names_and_values
 
 
-db.create_pickle_warehouse()
-pickling_dict = pickling_the_dictionary(define_all_tags_names())
-db.add_pickled_dict_to_db(pickling_dict)
-#unpickled_dict = unpickling_the_dictionary(pickling_dict)
+pickling_dict = pickle_the_data.pickling_the_dictionary(define_all_tags_names())
+backend_db.add_pickled_dict_to_db(pickling_dict)
+print(backend_db.view())
 
 
-#print(define_all_tags_names())
-#print(len(pickling_dict))
-print(db.view())
