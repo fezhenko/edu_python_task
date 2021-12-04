@@ -1,9 +1,9 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import backend_db
-import tag_counter
-import pickle_the_data
+from backend_db import Database
+from tag_counter import Tag_counter
+from pickle_the_data import Pickle
 from timeit import timeit
 
 
@@ -14,14 +14,14 @@ def get_selected_row(event):
 def load_command():
     # нужно добавить проверку что если у нас есть значение из комбобокса мы использеум его урл, в ином случае урл из энтри бокса
     # нужно как-то задизейблить ентри если выбран комбобокс и наоборот
-    pickling_dict = pickle_the_data.pickling_the_dictionary(tag_counter.parse(url_text.get()))
-    backend_db.insert(pickling_dict)
-    backend_db.insert_url(url_text.get())
+    pickling_dict = Pickle(Tag_counter(url_text.get()))
+    Database.insert(pickling_dict)
+    Database.insert_url(url_text.get())
     url_entry.delete(0, END)
 
 
 def combobox_urls():
-    return [row[2] for row in backend_db.view_urls()]
+    return [row[2] for row in Database.view_urls()]
 
 
 def show_from_db():
