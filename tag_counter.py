@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import yaml
 
 
 class Tag_counter:
@@ -27,3 +28,19 @@ class Tag_counter:
     #     dict_with_tags_names_and_values = {i: tags_list.count(i) for i in sorted(set(tags_list))}
     #     print("All tags have been successfully saved as dictionary")
     #     return dict_with_tags_names_and_values
+
+
+#
+# t=Tag_counter("http://yandex.by")
+# print(t.tags_to_dict())
+
+
+
+#
+# def find_value(filepath, i):
+#     with open(filepath, "r") as f:
+#         data = yaml.safe_load(f)
+#         if i in data:
+#             print(data[i])
+#
+# find_value("synonyms.YAML","ydx")
