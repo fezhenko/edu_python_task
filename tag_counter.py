@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-import yaml
-
+from yaml_reader import yaml_reader
 
 class Tag_counter:
     def __init__(self, url="https://google.by/"):

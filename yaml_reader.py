@@ -9,8 +9,8 @@ class yaml_reader:
             self.data = yaml.safe_load(f)
 
     def check_synonym(self, value):
-        if value in list(self.data.values()):
-            return value
+        if value in list(self.data.keys()):
+            return self.data[value]
         else:
             if not re.match('(?:http|ftp|https)://', value):
                 updated_url = str('https://{}'.format(value))
