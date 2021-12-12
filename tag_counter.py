@@ -43,4 +43,4 @@ class Tag_counter:
 #         if i in data:
 #             print(data[i])
 #
-# find_value("synonyms.YAML","ydx")
+# find_value("synonyms.yaml","ydx")

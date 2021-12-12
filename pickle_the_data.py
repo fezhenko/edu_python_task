@@ -12,7 +12,7 @@ def pickle_dict(x):
     return filename
 
 
-def unpickling_the_dictionary(self, x):
+def unpickling_the_dictionary(x):
     content = open(x, 'rb')
     pickled_out = pickle.load(content)
     return pickled_out

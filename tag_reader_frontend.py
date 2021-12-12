@@ -44,7 +44,7 @@ class Window(object):
         # нужно добавить проверку что если у нас есть значение из комбобокса мы использеум его урл, в ином случае урл из энтри бокса
         # нужно как-то задизейблить ентри если выбран комбобокс и наоборот
         yaml = yaml_reader()
-        url_for_using = yaml.synonym_value(self.url_text.get())
+        url_for_using = yaml.check_synonym(self.url_text.get(),)
         t = Tag_counter(url_for_using)
         tags_to_dict = t.tags_to_dict()
         pickling_dict = pickle_the_data.pickle_dict(tags_to_dict)
