@@ -15,8 +15,9 @@ class yaml_reader:
             if not re.match('(?:http|ftp|https)://', value):
                 updated_url = str('https://{}'.format(value))
                 return updated_url
-                
+
     def create_synonym(self, key, value):
+        """Создаёт словарь с синонимом и ссылкой для этого синонима и добавляет его в ямл файл"""
         my_dict = {key: value}
         url = my_dict[key]
         if key in self.data:
@@ -35,8 +36,27 @@ class yaml_reader:
                 print(f"{my_dict[key]} is fine as url")
                 return url
 
-# y = yaml_reader()
-# y.check_synonym('https://bing.com')
-# y.create_synonym('bing', 'bing.com')
+    def delete_synonym(self, key):
+        with open(self.filepath, 'r') as file:
+            content = yaml.safe_load(file)
+            list_of_keys = list(content.keys())
+            if key in list_of_keys:
+                del content[key]
+                print(f"'{key}' is deleted from 'synonyms.yaml'")
+                with open(self.filepath, 'w') as new_file:
+                    yaml.dump(content, new_file)
+            else:
+                print(f"'{key}' is not in 'synonyms.yaml'")
 
-# # (ru|com|by|net$)
+    def view_synonyms(self):
+        with open(self.filepath, 'r') as file:
+            content = yaml.safe_load(file)
+            return content
+
+
+y = yaml_reader()
+y.create_synonym('bing', 'bing.com')
+y.delete_synonym('bing')
+y.view_synonyms()
+
+# (ru|com|by|net$)

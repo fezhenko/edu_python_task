@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from yaml_reader import yaml_reader
 
+
 class Tag_counter:
     def __init__(self, url="https://google.by/"):
         self.HOST = url  # for example: "https://google.by/"
@@ -19,6 +20,13 @@ class Tag_counter:
         print("All tags have been successfully saved as dictionary")
         return dict_with_tags_names_and_values
 
+    def site_name(self):
+        name = self.soup.find('title').text
+        return name
+
+    def check_date(self):
+        pass
+
     def total_amount_of_tags(self):
         return len(self.soup.find_all())
 
@@ -29,17 +37,6 @@ class Tag_counter:
     #     return dict_with_tags_names_and_values
 
 
-#
-# t=Tag_counter("http://yandex.by")
+t = Tag_counter()
+print(t.site_name())
 # print(t.tags_to_dict())
-
-
-
-#
-# def find_value(filepath, i):
-#     with open(filepath, "r") as f:
-#         data = yaml.safe_load(f)
-#         if i in data:
-#             print(data[i])
-#
-# find_value("synonyms.yaml","ydx")
