@@ -1,9 +1,44 @@
-ggl: https://google.by
-google: https://google.by
-google.by: https://google.by
-google.com: https://google.com
-yandex: https://yandex.by
-yandex.by: https://yandex.by
-yandex.com: https://yandex.com
-ydx: https://yandex.by
-youtube: https://www.youtube.com/
+bing(correct_url):
+  created: '2022-01-10 00:26:51'
+  synonym_name: bing(correct_url)
+  synonym_value: https://bing.com
+ggl:
+  created: '2022-01-09 20:12:41'
+  synonym_name: ggl
+  synonym_value: https://google.by
+google:
+  created: '2022-01-09 20:12:41'
+  synonym_name: google
+  synonym_value: https://google.by
+google.by:
+  created: '2022-01-09 20:12:41'
+  synonym_name: google.by
+  synonym_value: https://google.by
+google.com:
+  created: '2022-01-09 20:12:41'
+  synonym_name: google.com
+  synonym_value: https://google.com
+new:
+  created: '2022-01-10 00:23:45'
+  synonym_name: new
+  synonym_value: https://google.by
+yandex:
+  created: '2022-01-09 20:12:41'
+  synonym_name: yandex
+  synonym_value: https://yandex.by
+yandex.by:
+  created: '2022-01-09 20:12:41'
+  synonym_name: yandex
+  synonym_value: https://yandex.by
+yandex.com:
+  created: '2022-01-09 20:12:41'
+  synonym_name: yandex.com
+  synonym_value: https://yandex.com
+ydx:
+  created: '2022-01-09 20:12:41'
+  synonym_name: ydx
+  synonym_value: https://yandex.by
+youtube:
+  created: '2022-01-09 20:12:41'
+  synonym_name: youtube
+  synonym_value: https://www.youtube.com/
