@@ -1,26 +1,21 @@
 import pickle
 from random import randint
+import logging
 from tag_counter import Tag_counter
 
 
-def pickle_dict(x):
-    filename = f"{randint(0, 10000)}_pickle"
+def deserialization(x):
+    deserialized = pickle.loads(x)
+    logging.info(f"blob {x} has been loaded as {deserialized}")
+    return deserialized
+
+
+def serialization(x):
+    serialized = pickle.dumps(x)
+    filename = f"serialized_dict_{randint(0,1000)}"
     with open(filename, 'wb') as file:
-        pickle.dump(x, file)
-        file.close()
-    print("Dictionary with tags is pickled")
-    return filename
+        file.write(serialized)
+    return serialized
 
-
-def unpickling_the_dictionary(x):
-    content = open(x, 'rb')
-    pickled_out = pickle.load(content)
-    return pickled_out
-
-
-p = Tag_counter()
-print(type(p))
-# pickling_dict = Pickle(p)
-
-# p=Pickle()
-# print(p.unpickling_the_dictionary())
+# t = Tag_counter()
+# serialization(t.tags_to_dict())
