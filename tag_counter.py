@@ -23,6 +23,7 @@ class Tag_counter:
                 new_url = str('https://{}'.format(url))
                 self.logger.info(f"Updated url: {new_url} is applied instead of {url}")
                 self.HOST = new_url
+        print(self.HOST)
         self.headers = {
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                           "Chrome/95.0.4638.69 Safari/537.36",
@@ -31,8 +32,7 @@ class Tag_counter:
         self.data = self.r.content
         self.soup = BeautifulSoup(self.data, "html.parser")
 
-
-    def tags_to_dict(self, url):
+    def tags_to_dict(self):
         self.logger.info("All tags have been successfully saved as dictionary")
         tags_list = [tag.name for tag in self.soup.find_all(True)]
         dict_with_tags_names_and_values = {i: tags_list.count(i) for i in sorted(set(tags_list))}
@@ -53,4 +53,6 @@ class Tag_counter:
     #     print("All tags have been successfully saved as dictionary")
     #     return dict_with_tags_names_and_values
 
-t=Tag_counter('vk.com')
+
+if __name__ == '__main__':
+    t = Tag_counter('vk.com')

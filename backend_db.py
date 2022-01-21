@@ -2,7 +2,6 @@ import sqlite3
 import logging
 from tag_counter import Tag_counter
 from datetime import datetime
-import yaml_reader
 import pickle
 
 
@@ -13,9 +12,8 @@ class Database:
         self.conn = sqlite3.connect('tag_counter.db')
         self.curs = self.conn.cursor()
         logging.info("connected to DB")
-        self.curs.execute(
-            "CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY, Site_name text, url text, check_date timestamp, "
-            "tag_data text)")
+        self.curs.execute('''CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY, tag_data text, Site_name text, 
+        url text, check_date timestamp)''')
         self.conn.commit()
 
     def view(self):
@@ -43,28 +41,33 @@ class Database:
         return deserialized
 
     def view_urls(self):
-        self.curs.execute("SELECT * FROM tags WHERE url!=?", ('',))
+        self.curs.execute("SELECT url FROM tags WHERE url IS NOT NULL")
         rows = self.curs.fetchall()
         return rows
 
-    def insert_url(self, url):
-        self.curs.execute(f"SELECT url FROM tags WHERE url=?", (url,))
-        if self.curs.fetchone() is None:
-            self.curs.execute("""INSERT INTO tags (id,tag_data, Site_name, url, check_date) VALUES(NULL,NULL,NULL,?,NULL)""", (url,))
-        else:
-            logging.info("This URL has been already added to the list")
-        self.conn.commit()
+    # def insert_url(self, url):
+    #     self.curs.execute(f"SELECT url FROM tags WHERE url=?", (url,))
+    #     if self.curs.fetchone() is None:
+    #         self.curs.execute(
+    #             """INSERT INTO tags (id,tag_data, Site_name, url, check_date) VALUES(NULL,NULL,NULL,?,NULL)""", (url,))
+    #     else:
+    #         logging.info("This URL has been already added to the list")
+    #     self.conn.commit()
 
     def __del__(self):
         self.conn.close()
 
 
-y = yaml_reader.yaml_reader()
-website = y.check_synonym('youtube')
+# y = yaml_reader.yaml_reader()
+# website = y.check_synonym('youtube')
+website = 'youtube'
 t = Tag_counter(website)
+new_url = t.HOST
 s_tags = t.tags_to_dict()
+sitename = t.site_name()
 
 d = Database()
 
-w = d.insert(s_tags, t.site_name(), website)
+w = d.insert(s_tags, sitename, new_url)
 d.get_from_db(w)
+print(d.view_urls())
