@@ -25,7 +25,7 @@ class Database:
         serialized = pickle.dumps(tag_data)
         self.curs.execute(f'SELECT tag_data FROM tags WHERE tag_data=?', (serialized,))
         if self.curs.fetchone() is None:
-            self.curs.execute("""INSERT INTO tags (id,tag_data, Site_name, url, check_date) VALUES(NULL,?,?,?,?)""",
+            self.curs.execute('''INSERT INTO tags (id,tag_data, Site_name, url, check_date) VALUES(NULL,?,?,?,?)''',
                               (serialized, site_name, url, check_date))
             logging.info("Pickled dictionary with tags has been added to tag_counter.db")
             logging.info(f"tag_data={serialized}, site_name={site_name}, url={url}, check_date={check_date}")

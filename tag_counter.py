@@ -15,22 +15,62 @@ class Tag_counter:
 
         with open(self.filepath, "r") as f:
             self.data = yaml.safe_load(f)
+
         if url in self.data:
             self.HOST = self.data[url]['synonym_value']
             self.logger.info(f"Synonym {self.data[url]['synonym_value']} is applied instead of {url}")
         else:
-            if not re.match('(?:http|ftp|https)://', url):
-                new_url = str('https://{}'.format(url))
-                self.logger.info(f"Updated url: {new_url} is applied instead of {url}")
-                self.HOST = new_url
-        print(self.HOST)
-        self.headers = {
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                          "Chrome/95.0.4638.69 Safari/537.36",
-            "content-type": "text/html"}
-        self.r = requests.get(self.HOST, headers=self.headers)
-        self.data = self.r.content
-        self.soup = BeautifulSoup(self.data, "html.parser")
+            domens = ('.com', '.ru', '.by', '.net', '.org', '.io', '.info', '.gov', '.biz')
+            headers = {
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                              "Chrome/95.0.4638.69 Safari/537.36",
+                "content-type": "text/html"}
+            if not re.search(r'https?://[a-zA-Z0-9_.-]+\.[a-zA-Z]+', url):
+                if not re.search(r'^https?://', url) and not re.search(r'\.[a-zA-Z]+$', url):
+                    try:
+                        self.HOST = f"https://{url}.com"
+                        requests.get(self.HOST, headers=headers)
+                    except:
+                        for i in domens:
+                            try:
+                                self.HOST = f"https://{url}{i}"
+                                requests.get(self.HOST, headers=headers)
+                            except:
+                                self.logger.info(f"{self.HOST} cannot be opened")
+                elif re.search(r'\.[a-zA-Z]+$', url) and not re.search(r'^https?://', url):
+                    try:
+                        self.HOST = f"https://{url}"
+                        requests.get(self.HOST, headers=headers)
+                    except:
+                        try:
+                            self.HOST = f"http://{url}"
+                            requests.get(self.HOST, headers=headers)
+                        except:
+                            self.logger.info(f"{self.HOST} cannot be opened")
+                elif re.search(r'^https?://', url) and not re.search(r'\.[a-zA-Z]+$', url):
+                    try:
+                        self.HOST = f"{url}.com"
+                        requests.get(self.HOST, headers=headers)
+                    except:
+                        for i in domens:
+                            try:
+                                self.HOST = f"{url}{i}"
+                                requests.get(self.HOST, headers=headers)
+                            except:
+                                self.logger.info(f"{self.HOST} cannot be opened")
+                else:
+                    self.logger.info("lets look on this trouble")
+        print(f"{self.HOST}")
+        try:
+            self.headers = {
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                              "Chrome/95.0.4638.69 Safari/537.36",
+                "content-type": "text/html"}
+            self.r = requests.get(self.HOST, headers=self.headers)
+            self.data = self.r.content
+            self.soup = BeautifulSoup(self.data, "html.parser")
+        except:
+            self.logger.info(f"Unreachable website: {self.HOST}")
 
     def tags_to_dict(self):
         self.logger.info("All tags have been successfully saved as dictionary")
@@ -55,4 +95,4 @@ class Tag_counter:
 
 
 if __name__ == '__main__':
-    t = Tag_counter('vk.com')
+    t = Tag_counter('helloworld.ru')
