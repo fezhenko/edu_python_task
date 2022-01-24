@@ -15,22 +15,24 @@ class Window(object):
 
         self.combo = ttk.Combobox(window, textvariable=self.opts, width=50)
         self.combo['values'] = self.combobox_urls()
-        self.combo.grid(row=0, column=0, columnspan=2)
+        self.combo.grid(row=0, column=0, columnspan=2, sticky=W + E, padx=1, pady=5)
         self.combo.bind("<<ComboboxSelected>>", self.get_selected_row)
 
         self.url_text = StringVar()
         self.url_entry = Entry(window, textvariable=self.url_text, width=50)
-        self.url_entry.grid(row=1, column=0, columnspan=2)
+        self.url_entry.grid(row=1, column=0, columnspan=2, sticky=W + E, padx=1, pady=5)
 
-        self.pb = ttk.Progressbar(window, orient='horizontal', mode='determinate', length=470)
-        self.pb.grid(row=3, column=0, columnspan=2)
+        self.pb = ttk.Progressbar(window, orient='horizontal', mode='determinate')
+        self.pb.grid(row=3, column=0, columnspan=2, sticky=W + E)
 
-        self.load_button = Button(window, text='Load', width=20, command=self.load_command)  # and self.pb.start)
-        self.load_button.grid(row=2, column=0)
+        self.load_button = Button(window, text='Load', width=20, command=self.load_command)
+        self.load_button.grid(row=2, column=0, sticky=W)
 
         self.showfromdb_button = Button(window, text='Show from DB', command=self.show_from_db,
-                                        width=23)
-        self.showfromdb_button.grid(row=2, column=1)
+                                        width=20)
+        self.showfromdb_button.grid(row=2, column=1, sticky=E)
+
+
 
     def get_selected_row(self, event):
         return self.combo.get()
