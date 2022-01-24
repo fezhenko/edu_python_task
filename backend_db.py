@@ -1,6 +1,5 @@
 import sqlite3
 import logging
-from tag_counter import Tag_counter
 from datetime import datetime
 import pickle
 
@@ -23,51 +22,36 @@ class Database:
 
     def insert(self, tag_data, site_name="", url="", check_date=datetime.now().strftime('%Y-%m-%d %H:%M:%S')):
         serialized = pickle.dumps(tag_data)
-        self.curs.execute(f'SELECT tag_data FROM tags WHERE tag_data=?', (serialized,))
+        self.curs.execute(f'SELECT url FROM tags WHERE url=?', (url,))
         if self.curs.fetchone() is None:
             self.curs.execute('''INSERT INTO tags (id,tag_data, Site_name, url, check_date) VALUES(NULL,?,?,?,?)''',
                               (serialized, site_name, url, check_date))
-            logging.info("Pickled dictionary with tags has been added to tag_counter.db")
+            logging.info("Dictionary with tags has been serialized and added to DB")
             logging.info(f"tag_data={serialized}, site_name={site_name}, url={url}, check_date={check_date}")
         else:
-            logging.info("The serialized_dict has been already added to warehouse :)")
+            logging.info(f"The serialized_dict related to {url} has been already added to warehouse :)")
         self.conn.commit()
         return serialized
 
-    def get_from_db(self, blob):
-        self.curs.execute(f"SELECT tag_data FROM tags WHERE tag_data=?", (blob,))
-        deserialized = pickle.loads(blob)
-        logging.info(f"Blob {blob} has been loaded as {deserialized}")
-        return deserialized
+    def get_from_db(self, url):
+        self.curs.execute(f"SELECT tag_data FROM tags WHERE url=?", (url,))
+        row = self.curs.fetchone()
+        if row is None:
+            logging.info(f"No data related to {url} has been stored in DB")
+        else:
+            deserialized = pickle.loads(row[0])
+            logging.info(f"Blob {row} has been loaded as {deserialized}")
+            return deserialized
 
     def view_urls(self):
         self.curs.execute("SELECT url FROM tags WHERE url IS NOT NULL")
         rows = self.curs.fetchall()
         return rows
 
-    # def insert_url(self, url):
-    #     self.curs.execute(f"SELECT url FROM tags WHERE url=?", (url,))
-    #     if self.curs.fetchone() is None:
-    #         self.curs.execute(
-    #             """INSERT INTO tags (id,tag_data, Site_name, url, check_date) VALUES(NULL,NULL,NULL,?,NULL)""", (url,))
-    #     else:
-    #         logging.info("This URL has been already added to the list")
-    #     self.conn.commit()
 
     def __del__(self):
         self.conn.close()
 
 
-# y = yaml_reader.yaml_reader()
-# website = y.check_synonym('youtube')
-website = 'youtube'
-t = Tag_counter(website)
-new_url = t.HOST
-s_tags = t.tags_to_dict()
-sitename = t.site_name()
-
-d = Database()
-
-w = d.insert(s_tags, sitename, new_url)
-d.get_from_db(w)
-print(d.view_urls())
+if __name__ == '__main__':
+    pass
