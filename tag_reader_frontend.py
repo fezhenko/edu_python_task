@@ -30,18 +30,37 @@ class Window(object):
 
         self.showfromdb_button = Button(window, text='Show from DB', command=self.show_from_db,
                                         width=15)
-        self.showfromdb_button.grid(row=2, column=1, sticky=E, pady=1)
+        self.showfromdb_button.grid(row=2, column=1, sticky=W, pady=1)
 
         self.add_synonym_button = Button(window, text='Add Synonym', width=15)
-        self.add_synonym_button.grid(row=2, column=2, columnspan=2,sticky=E, pady=1)
+        self.add_synonym_button.grid(row=2, column=2, columnspan=2, sticky=E, pady=1)
 
         self.l1 = Label(window, text='List of Synonyms')
         self.l1.grid(row=4, column=0, columnspan=4, sticky=W, pady=0)
 
         self.list1 = Listbox(window)
-        self.list1.grid(row=5, column=0, columnspan=2,  rowspan=5, sticky=W+E)
+        self.list1.grid(row=5, column=0, columnspan=2, rowspan=5, sticky=W+E)
 
+        sb = Scrollbar(window)
+        sb.grid(row=5, column=2, rowspan=5)
 
+        self.list1.configure(yscrollcommand=sb.set)
+        sb.configure(command=self.list1.yview)
+
+        self.view_synonyms_button = Button(window, text='View Synonyms', width=15)
+        self.view_synonyms_button.grid(row=5, column=3, sticky=E, pady=1)
+
+        self.search_synonym_button = Button(window, text='Search Synonym', width=15)
+        self.search_synonym_button.grid(row=6, column=3, sticky=E, pady=1)
+
+        self.update_synonym_button = Button(window, text='Update Synonym', width=15)
+        self.update_synonym_button.grid(row=7, column=3, sticky=E, pady=1)
+
+        self.delete_synonym_button = Button(window, text='Delete Synonym', width=15)
+        self.delete_synonym_button.grid(row=8, column=3, sticky=E, pady=1)
+
+        self.close_button = Button(window, text='Quit', width=15)
+        self.close_button.grid(row=9, column=3, sticky=E, pady=1)
 
     def get_selected_row(self, event):
         return self.combo.get()
@@ -84,7 +103,6 @@ class Window(object):
             tags = self.d.get_from_db(t.HOST)
             messagebox.showinfo(f"{tags}")
             self.url_entry.delete(0, END)
-
 
 
 window = Tk()

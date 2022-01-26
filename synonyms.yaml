@@ -1,7 +1,11 @@
+avtomalinovka:
+  created: '2022-01-27 00:10:29'
+  synonym_name: avtomalinovka
+  synonym_value: http://av.by
 bing(correct_url):
-  created: '2022-01-10 00:26:51'
+  created: '2022-01-26 23:35:18'
   synonym_name: bing(correct_url)
-  synonym_value: https://bing.com
+  synonym_value: http://helloworld.com
 ggl:
   created: '2022-01-09 20:12:41'
   synonym_name: ggl
@@ -18,6 +22,10 @@ google.com:
   created: '2022-01-09 20:12:41'
   synonym_name: google.com
   synonym_value: https://google.com
+helloworld:
+  created: '2022-01-26 23:38:57'
+  synonym_name: helloworld
+  synonym_value: http://helloworld.com
 new:
   created: '2022-01-10 00:23:45'
   synonym_name: new
