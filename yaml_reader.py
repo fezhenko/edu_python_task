@@ -2,11 +2,10 @@ import yaml
 import re
 from datetime import datetime
 import logging
-import tag_counter
 import requests
 
 
-class yaml_reader:
+class Synonyms:
     def __init__(self):
         logging.basicConfig(format='%(asctime)s,%(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
                             level=logging.INFO, filename=f'tag_counter.log')
@@ -20,14 +19,14 @@ class yaml_reader:
             self.data = yaml.safe_load(f)
 
     def check_synonym(self, sname):
-        """Check for a value in list of synonyms. Return synonym value or value if synonym doesn't exist"""
+        """Check for a value in list of synonyms. Return synonym value or None if synonym doesn't exist"""
         if sname in self.data:
             self.logger.info(
                 f"{self.data[sname]['synonym_name']} in the list of synonyms with value: {self.data[sname]['synonym_value']}")
             return self.data[sname]['synonym_value']
         else:
             self.logger.info(f"Value for synonym name: {sname} has not exist")
-            return sname
+            return None
 
     def add_synonym(self, key, value):
         """Check the key not in the synonyms list. Then add key as synonym_name,value as synonym_value to synonyms.yaml"""
@@ -207,7 +206,9 @@ class yaml_reader:
 
 
 if __name__ == '__main__':
-    y = yaml_reader()
+    y = Synonyms()
     # y.add_synonym('avtomalinovka', 'av')
     # y.update_synonym('avtomalinovka', 'av.by', 'av.by')
     # y.delete_synonym('avtomalinovka')
+    print(y.view_synonyms())
+

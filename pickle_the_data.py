@@ -1,7 +1,7 @@
 import pickle
 from random import randint
 import logging
-from tag_counter import Tag_counter
+
 
 
 def deserialization(x):

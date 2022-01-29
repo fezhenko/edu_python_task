@@ -84,6 +84,7 @@ class Tag_counter:
             self.logger.info(f"Unreachable website: {self.HOST}")
 
     def tags_to_dict(self):
+        """find all tags in the """
         tags_list = [tag.name for tag in self.soup.find_all(True)]
         dict_with_tags_names_and_values = {i: tags_list.count(i) for i in sorted(set(tags_list))}
         self.logger.info(f"All tags have been successfully saved as dictionary as {dict_with_tags_names_and_values}")
