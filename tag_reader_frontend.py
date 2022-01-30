@@ -4,6 +4,7 @@ from tkinter import messagebox
 from backend_db import Database
 from tag_counter import Tag_counter
 from yaml_reader import Synonyms
+from child_window_update_synonym import update_synonym_window
 
 
 class Window(object):
@@ -61,6 +62,7 @@ class Window(object):
 
         self.list1.configure(yscrollcommand=sb.set)
         sb.configure(command=self.list1.yview)
+        self.list1.bind('<<ListboxSelect>>', self.get_listbox_row)
 
         # button that displays synonyms from the synonyms.yaml in the listbox
         self.view_synonyms_button = Button(window, text='View Synonyms', width=15, command=self.view_synonyms)
@@ -71,20 +73,27 @@ class Window(object):
         self.search_synonym_button.grid(row=6, column=3, sticky=E, pady=1)
 
         # update certain synonym's value in the synonyms.yaml
-        self.update_synonym_button = Button(window, text='Update Synonym', width=15)
+        self.update_synonym_button = Button(window, text='Update Synonym', width=15,
+                                            command=self.update_synonym_child_window)
         self.update_synonym_button.grid(row=7, column=3, sticky=E, pady=1)
 
         # delete synonym from the synonyms.yaml
-        self.delete_synonym_button = Button(window, text='Delete Synonym', width=15)
+        self.delete_synonym_button = Button(window, text='Delete Synonym', width=15, command=self.delete_synonym)
         self.delete_synonym_button.grid(row=8, column=3, sticky=E, pady=1)
 
         # close the window
-        self.close_button = Button(window, text='Quit', width=15)
+        self.close_button = Button(window, text='Quit', width=15,command=self.window.destroy)
         self.close_button.grid(row=9, column=3, sticky=E, pady=1)
 
     def get_selected_row(self, event):
         """get the selected value from the combobox"""
         return self.combo.get()
+
+    def get_listbox_row(self, event):
+        """get the selected value from the listbox"""
+        global selected_value
+        index = self.list1.curselection()
+        selected_value = self.list1.get(index)
 
     def load_command(self):
         if self.combo.get():
@@ -95,18 +104,20 @@ class Window(object):
             tags = t.tags_to_dict()
             name = t.site_name()
             self.d.insert(tags, name, t.HOST)
-            messagebox.showinfo(f"Loaded tags", f"{tags} of the {t.HOST} has been loaded to DB")
             self.pb.configure(value=0)
+            self.combo.update()
+            messagebox.showinfo(f"Loaded tags", f"{tags} of the {t.HOST} has been loaded to DB")
             self.combo.delete(0, END)
-        elif self.url_text.get():
-            if self.combo.get():
+        elif self.url_entry.get():
+            if self.url_entry.get():
                 for i in range(101):
                     self.pb.configure(value=i)
                     self.pb.update()
-            t = Tag_counter(self.url_text.get())
+            t = Tag_counter(self.url_entry.get())
             tags = t.tags_to_dict()
             name = t.site_name()
             self.d.insert(tags, name, t.HOST)
+            self.combo.update()
             messagebox.showinfo(f"Loaded tags", f"{tags} of the {t.HOST} has been loaded to DB")
             self.url_entry.delete(0, END)
 
@@ -119,8 +130,8 @@ class Window(object):
             tags = self.d.get_from_db(t.HOST)
             messagebox.showinfo(f"Tags of the {t.HOST}", f"{tags}")
             self.combo.delete(0, END)
-        elif self.url_text.get():
-            t = Tag_counter(self.url_text.get())
+        elif self.url_entry.get():
+            t = Tag_counter(self.url_entry.get())
             tags = self.d.get_from_db(t.HOST)
             messagebox.showinfo(f"{tags}")
             self.url_entry.delete(0, END)
@@ -148,6 +159,17 @@ class Window(object):
                 self.url_entry.delete(0, END)
         else:
             messagebox.showinfo("Error", f"Fill the any field and try again")
+
+    def update_synonym_child_window(self):
+        # connect to child window
+        update_synonym_window(self.window)
+
+    def delete_synonym(self):
+        self.syn.delete_synonym(selected_value)
+        self.list1.update()
+
+    def add_synonym(self):
+        pass
 
 
 window = Tk()

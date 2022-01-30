@@ -91,9 +91,12 @@ class Tag_counter:
         return dict_with_tags_names_and_values
 
     def site_name(self):
-        name = self.soup.find('title').text
-        self.logger.info(f"Site name is '{name}'")
-        return name
+        try:
+            name = self.soup.find('title').text
+            self.logger.info(f"Site name is '{name}'")
+            return name
+        except:
+            return None
 
     def total_amount_of_tags(self):
         self.logger.info(f"Number of tags on the page is '{len(self.soup.find_all())}'")

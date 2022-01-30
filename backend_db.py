@@ -10,7 +10,6 @@ class Database:
                             level=logging.INFO, filename=f'tag_counter.log')
         self.conn = sqlite3.connect('tag_counter.db')
         self.curs = self.conn.cursor()
-        logging.info("connected to DB")
         self.curs.execute('''CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY, tag_data text, Site_name text, 
         url text, check_date timestamp)''')
         self.conn.commit()
