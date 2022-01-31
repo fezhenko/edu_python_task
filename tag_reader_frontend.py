@@ -4,7 +4,7 @@ from tkinter import messagebox
 from backend_db import Database
 from tag_counter import Tag_counter
 from yaml_reader import Synonyms
-from child_window_update_synonym import update_synonym_window
+from child_window_update_synonym import update_synonym_window,add_synonym_window
 
 
 class Window(object):
@@ -45,7 +45,7 @@ class Window(object):
         self.show_from_db_button.grid(row=2, column=1, sticky=W, pady=1)
 
         # create a button that get data from the entry fields in the special window and add it to the synonyms.yaml file
-        self.add_synonym_button = Button(window, text='Add Synonym', width=15)
+        self.add_synonym_button = Button(window, text='Add Synonym', width=15,command=self.add_synonym_child_window)
         self.add_synonym_button.grid(row=2, column=2, columnspan=2, sticky=E, pady=1)
 
         # label above the listbox
@@ -168,8 +168,8 @@ class Window(object):
         self.syn.delete_synonym(selected_value)
         self.list1.update()
 
-    def add_synonym(self):
-        pass
+    def add_synonym_child_window(self):
+        add_synonym_window(self.window)
 
 
 window = Tk()
