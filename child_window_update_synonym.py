@@ -4,7 +4,7 @@ from yaml_reader import Synonyms
 
 
 class update_synonym_window:
-    def __init__(self, parent, title='Update synonym', width=300, height=150):
+    def __init__(self, parent, title='Update synonym', width=300, height=147):
         self.root = Toplevel(parent)
         self.root.title(title)
         self.root.geometry(f"{width}x{height}")
@@ -38,17 +38,23 @@ class update_synonym_window:
         self.grab_focus()
 
     def update_synonym(self):
-        if self.key_entry.get():
-            if self.new_key_entry.get() and self.new_value_entry.get():
-                self.syn.update_synonym(self.key_entry.get(), self.new_value_entry.get(),
-                                        self.new_key_entry.get())
+        current_key = self.key_entry.get()
+        new_key = self.new_key_entry.get()
+        new_value = self.new_value_entry.get()
+        if current_key:
+            if new_key and new_value:
+                self.syn.update_synonym(current_key, new_value,
+                                        new_key)
+                messagebox.showinfo('Success', f"Data has been successfully updated in the 'synonyms.yaml'")
                 self.key_entry.delete(0, END)
                 self.new_key_entry.delete(0, END)
                 self.new_value_entry.delete(0, END)
-            elif self.new_key_entry.get() and not self.new_value_entry.get():
+            elif new_key and not new_value:
                 messagebox.showinfo('New value error', f"Fill the 'New value' field and try again")
-            elif not self.new_key_entry.get() and self.new_value_entry.get():
-                self.syn.update_synonym(self.key_entry.get(), self.new_value_entry.get())
+                self.new_key_entry.delete(0, END)
+            elif not new_key and new_value:
+                self.syn.update_synonym(current_key, new_value)
+                messagebox.showinfo('Success', f"Data has been successfully updated in the 'synonyms.yaml'")
                 self.key_entry.delete(0, END)
                 self.new_value_entry.delete(0, END)
             else:
@@ -64,7 +70,7 @@ class update_synonym_window:
 
 
 class add_synonym_window:
-    def __init__(self, parent, title='Add synonym', width=300, height=150):
+    def __init__(self, parent, title='Add synonym', width=300, height=132):
         self.root = Toplevel(parent)
         self.root.title(title)
         self.root.geometry(f"{width}x{height}")
@@ -73,7 +79,7 @@ class add_synonym_window:
 
         # create label 'Synonym name'
         self.synonym_name_label = Label(self.root, text='*Synonym name')
-        self.synonym_name_label.grid(row=0, column=0, sticky=W)
+        self.synonym_name_label.grid(row=0, column=0, sticky=W, pady=5)
 
         # create entry field for a Synonym name
         synonym_name_text = StringVar()
@@ -82,15 +88,33 @@ class add_synonym_window:
 
         # create label 'Synonym value' (URL)
         self.synonym_url_label = Label(self.root, text="*Synonym's URL")
-        self.synonym_url_label.grid(row=2, column=0, sticky=W)
+        self.synonym_url_label.grid(row=2, column=0, sticky=W, pady=5)
 
         # create entry field for 'Synonym value' (URL)
         synonym_url_text = StringVar()
         self.synonym_url_entry = Entry(self.root, textvariable=synonym_url_text, width=50)
         self.synonym_url_entry.grid(row=3, column=0, sticky=W + E)
 
-        #create add_synonym_button
+        # create add_synonym_button
+        self.add_synonym_button = Button(self.root, text='Add', command=self.add_synonym)
+        self.add_synonym_button.grid(row=4, column=0, sticky=W + E, pady=5)
 
+        self.grab_focus()
 
-    def add_synonym_button(self):
-        pass
+    def add_synonym(self):
+        """get key and value from the 'add_synonym_window' fields and add this data to the synonyms.yaml as key:[key] plus as [key]['synonym_name'], value: [key]['synonym_value']"""
+        key_value = self.synonym_name_entry.get()
+        value_value = self.synonym_url_entry.get()
+        if key_value and value_value:
+            self.syn.add_synonym(key_value, value_value)
+            messagebox.showinfo('Success', f"Data has been successfully added to the 'synonyms.yaml'")
+            self.root.destroy()
+        elif key_value and not value_value:
+            messagebox.showinfo('Empty URL', "Please fill the *Synonym's URL field and try again")
+        else:
+            messagebox.showinfo('Empty Name', "Please fill the *Synonym name field and try again")
+
+    def grab_focus(self):
+        self.root.grab_set()
+        self.root.focus_set()
+        self.root.wait_window()

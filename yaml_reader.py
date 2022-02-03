@@ -29,7 +29,7 @@ class Synonyms:
             return None
 
     def add_synonym(self, key, value):
-        """Check the key not in the synonyms list. Then add key as synonym_name,value as synonym_value to synonyms.yaml"""
+        """Check the key not in the synonyms list. Then add key as synonym_name,value as synonym_value to synonyms.yaml. If value does not match with 'http(s)://example.example' structure we will try to do request and adjust user's input"""
         global updated_url
         if key in self.data and self.data[key]['synonym_value'] == value:
             logging.info(f"URL:'{value}' already in the list of synonyms with Key:'{key}'")
@@ -39,95 +39,99 @@ class Synonyms:
             logging.info(f"Key:'{key}' already in the list, but with another value:'{self.data[key]['synonym_value']}'")
             return self.data[key]['synonym_value']
         else:
-
             domens = ('.com', '.ru', '.by', '.net', '.org', '.io', '.info', '.gov', '.biz')
-            if not re.search(r"^https?://[a-zA-Z0-9_.-]+", value) and re.search(r"\.[a-zA-Z]+/?$", value):
+            if not re.search(r"^https?://[a-zA-Z0-9_.-]+", value) and re.search(
+                    r"\.[a-zA-Z][a-zA-Z][a-zA-Z][a-zA-Z]?/?$", value):
                 try:
-                    updated_url = f"http://{value}"
-                    requests.get(updated_url, headers=self.headers)
-                    self.data[key] = {'synonym_name': key, 'synonym_value': updated_url,
+                    self.updated_url = f"https://{value}"
+                    requests.get(self.updated_url, headers=self.headers)
+                    self.data[key] = {'synonym_name': key, 'synonym_value': self.updated_url,
                                       'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-                    with open(self.filepath, "w") as file:
-                        yaml.dump(self.data, file)
-                    logging.info(f"{value} is updated {updated_url}")
-                    logging.info(f"URL:'{updated_url}' has been added with key:'{key}' to the list")
+                    logging.info(f"URL:'{self.updated_url}' will be added with key:'{key}' to the list")
                 except:
-                    self.logger.info(f"{updated_url} cannot be reached")
+                    self.logger.info(f"{self.updated_url} cannot be reached")
                     try:
-                        updated_url = f"https://{value}"
-                        requests.get(updated_url, headers=self.headers)
+                        self.updated_url = f"http://{value}"
+                        requests.get(self.updated_url, headers=self.headers)
+                    except:
+                        self.logger.info(f"{self.updated_url} cannot be reached")
+                self.data[key] = {'synonym_name': key, 'synonym_value': self.updated_url,
+                                  'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+                with open(self.filepath, "w") as file:
+                    yaml.dump(self.data, file)
+                    logging.info(f"URL:'{self.updated_url}' has been added with key:'{key}' to the list")
+                return
+            elif not re.search(r"\.[a-zA-Z][a-zA-Z][a-zA-Z][a-zA-Z]?/?$", value) and re.search(
+                    r"^https?://[a-zA-Z0-9_.-]+", value):
+                try:
+                    updated_url = f"{value}.com"
+                    request=requests.get(updated_url, headers=self.headers)
+                    if request.status_code == 200:
+                        logging.info(f"URL:'{updated_url}' will be added with key:'{key}' to the list")
                         self.data[key] = {'synonym_name': key, 'synonym_value': updated_url,
                                           'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
                         with open(self.filepath, "w") as file:
                             yaml.dump(self.data, file)
-                        logging.info(f"{value} is updated {updated_url}")
                         logging.info(f"URL:'{updated_url}' has been added with key:'{key}' to the list")
-                    except:
-                        self.logger.info(f"{updated_url} cannot be reached")
-                return updated_url
-            elif not re.search(r"\.[a-zA-Z]+/?$", value) and re.search(r"^https?://[a-zA-Z0-9_.-]+", value):
-                try:
-                    updated_url = f"{value}.com"
-                    requests.get(updated_url, headers=self.headers)
-                    self.data[key] = {'synonym_name': key, 'synonym_value': updated_url,
-                                      'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-                    with open(self.filepath, "w") as file:
-                        yaml.dump(self.data, file)
-                    logging.info(f"{value} is updated {updated_url}")
-                    logging.info(f"URL:'{updated_url}' has been added with key:'{key}' to the list")
+                        return
                 except:
                     for i in domens:
                         try:
                             updated_url = requests.get(f'{value}.{i}')
-                            requests.get(updated_url, headers=self.headers)
-                            self.data[key] = {'synonym_name': key, 'synonym_value': updated_url,
-                                              'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-                            with open(self.filepath, "w") as file:
-                                yaml.dump(self.data, file)
-                            logging.info(f"{value} is updated {updated_url}")
-                            logging.info(f"URL:'{updated_url}' has been added with key:'{key}' to the list")
+                            self.logger.info(f"try to get response from {updated_url} ...")
+                            request = requests.get(updated_url, headers=self.headers)
+                            if request.status_code == 200:
+                                self.data[key] = {'synonym_name': key, 'synonym_value': updated_url,
+                                                  'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+                                with open(self.filepath, "w") as file:
+                                    yaml.dump(self.data, file)
+                                logging.info(f"URL:'{updated_url}' has been added with key:'{key}' to the list")
+                                return
                         except:
                             self.logger.info(f'{updated_url} cannot be reached')
-                return updated_url
-            elif not re.search(r'https?://[a-zA-Z0-9_.-]+\.[a-zA-Z]+/?', value):
+                            return
+            elif not re.search(r'https?://[a-zA-Z0-9_.-]+\.[a-zA-Z][a-zA-Z][a-zA-Z][a-zA-Z]?/?', value):
                 try:
-                    updated_url = str('http://{}.com'.format(value))
-                    requests.get(updated_url, headers=self.headers)
-                    self.data[key] = {'synonym_name': key, 'synonym_value': updated_url,
-                                      'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-                    with open(self.filepath, "w") as file:
-                        yaml.dump(self.data, file)
-                    logging.info(f"{value} is updated {updated_url}")
-                    logging.info(f"URL:'{updated_url}' has been added with key:'{key}' to the list")
+                    updated_url = str('https://{}.com'.format(value))
+                    request = requests.get(updated_url, headers=self.headers)
+                    if request.status_code == 200:
+                        self.data[key] = {'synonym_name': key, 'synonym_value': updated_url,
+                                          'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+                        with open(self.filepath, "w") as file:
+                            yaml.dump(self.data, file)
+                        logging.info(f"URL:'{updated_url}' has been added with key:'{key}' to the list")
+                        return
                 except:
                     self.logger.info(f"{updated_url} cannot be reached")
                     for i in domens:
                         try:
+                            self.logger.info(f"try to get response from {updated_url} ...")
                             updated_url = f"https://{value}{i}"
-                            requests.get(updated_url, headers=self.headers)
-                            self.data[key] = {'synonym_name': key, 'synonym_value': updated_url,
-                                              'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-                            with open(self.filepath, "w") as file:
-                                yaml.dump(self.data, file)
-                            logging.info(f"{value} is updated {updated_url}")
-                            logging.info(f"URL:'{updated_url}' has been added with key:'{key}' to the list")
+                            request = requests.get(updated_url, headers=self.headers)
+                            if request.status_code == 200:
+                                self.data[key] = {'synonym_name': key, 'synonym_value': updated_url,
+                                                  'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+                                with open(self.filepath, "w") as file:
+                                    yaml.dump(self.data, file)
+                                logging.info(f"URL:'{updated_url}' has been added with key:'{key}' to the list")
+                                return
                         except:
                             self.logger.info(f"{updated_url} cannot be reached")
-                return updated_url
+                            return
             else:
                 self.data[key] = {'synonym_name': key, 'synonym_value': value,
                                   'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
                 with open(self.filepath, "w") as file:
                     yaml.dump(self.data, file)
-                logging.info(f"URL: '{value}' is fine")
                 logging.info(f"URL:'{value}' has been added to the list of synonyms with Key:'{key}'")
-                return value
+                return
 
     def update_synonym(self, key, new_value, new_key=None):
         """update the synonym key, value in the synonyms.yaml"""
+        domens = ('.com', '.ru', '.by', '.net', '.org', '.io', '.info', '.gov', '.biz')
         if key in self.data:
             if new_key is None and new_value is not None:
-                if re.search(r"https?://[a-zA-Z0-9_.-]+\.[a-zA-z]+/?", new_value):
+                if re.search(r"https?://[a-zA-Z0-9_.-]+\.[a-zA-Z][a-zA-Z][a-zA-Z][a-zA-Z]?/?", new_value):
                     self.data[key] = {'synonym_name': key, 'synonym_value': new_value,
                                       'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
                     with open(self.filepath, 'w') as file:
@@ -138,16 +142,16 @@ class Synonyms:
                         f"Change the value:'{new_value}' and try again, URL should be ended with .com or smth like this")
                     print(
                         f"Change the value:'{new_value}' and try again, URL should be ended with .com or smth like this")
-                elif re.search(r"[a-zA-Z0-9._-]+\.[a-zA-Z]+/?$", new_value):
+                elif re.search(r"[a-zA-Z0-9._-]+\.[a-zA-Z][a-zA-Z][a-zA-Z][a-zA-Z]?/?$", new_value):
                     try:
-                        requests.get(f"http://{new_value}", headers=self.headers)
+                        requests.get(f"https://{new_value}", headers=self.headers)
                         self.data[key] = {'synonym_name': key, 'synonym_value': f"http://{new_value}",
                                           'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
                         with open(self.filepath, 'w') as file:
                             yaml.dump(self.data, file)
                             return
                     except:
-                        requests.get(f"https://{new_value}", headers=self.headers)
+                        requests.get(f"http://{new_value}", headers=self.headers)
                         self.data[key] = {'synonym_name': key, 'synonym_value': f"https://{new_value}",
                                           'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
                         with open(self.filepath, 'w') as file:
@@ -156,7 +160,7 @@ class Synonyms:
                 else:
                     logging.info(f"new_value only: Change the value:'{new_value}' and try again")
             elif new_key is not None and new_value is not None:
-                if re.search(r"https?://[a-zA-Z0-9_.-]+\.[a-zA-z]+/?", new_value):
+                if re.search(r"https?://[a-zA-Z0-9_.-]+\.[a-zA-Z][a-zA-Z][a-zA-Z][a-zA-Z]?/?", new_value):
                     self.data[key] = {'synonym_name': new_key, 'synonym_value': new_value,
                                       'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
                     with open(self.filepath, 'w') as file:
@@ -167,23 +171,45 @@ class Synonyms:
                         f"Change the URL:'{new_value}' and try again, URL should be in format https://example.com")
                     print(
                         f"Change the URL:'{new_value}' and try again, URL should be in format https://example.com")
-                elif re.search(r"\.[a-zA-Z]+/?$", new_value):
+                elif re.search(r"\.[a-zA-Z][a-zA-Z][a-zA-Z][a-zA-Z]?/?$", new_value):
                     try:
-                        requests.get(f"http://{new_value}", headers=self.headers)
+                        requests.get(f"https://{new_value}", headers=self.headers)
                         self.data[key] = {'synonym_name': new_key, 'synonym_value': f"http://{new_value}",
                                           'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
                         with open(self.filepath, 'w') as file:
                             yaml.dump(self.data, file)
                             return
                     except:
-                        requests.get(f"https://{new_value}", headers=self.headers)
+                        requests.get(f"http://{new_value}", headers=self.headers)
                         self.data[key] = {'synonym_name': new_key, 'synonym_value': f"https://{new_value}",
                                           'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
                         with open(self.filepath, 'w') as file:
                             yaml.dump(self.data, file)
                             return
                 else:
-                    logging.info(f"new_key+new_value: Change the value:'{new_value}' and try again")
+                    try:
+                        requests.get(f"https://{new_value}.com", headers=self.headers)
+                        self.data[key] = {'synonym_name': new_key, 'synonym_value': f"https://{new_value}.com",
+                                          'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+                        with open(self.filepath, 'w') as file:
+                            yaml.dump(self.data, file)
+                            return
+                    except:
+                        for i in domens:
+                            try:
+                                try_url = f"https://{new_value}{i}"
+                                request = requests.get(try_url, headers=self.headers)
+                                if request.status_code == 200:
+                                    with open(self.filepath, 'w') as file:
+                                        yaml.dump(self.data, file)
+                                        return
+                            except:
+                                logging.info(
+                                    f"new_key+new_value: Change the value:'{new_value}' and try again. Use described format https://example.com")
+            elif new_key is None and new_value is None:
+                logging.info(f"At least Synonym name and URL should be filled. Please try again")
+            else:
+                logging.info(f"URL is necessary field, fill it and try again")
         else:
             logging.info(f"Synonym with name:{key} doesn't exist")
 
@@ -211,4 +237,3 @@ if __name__ == '__main__':
     # y.update_synonym('avtomalinovka', 'av.by', 'av.by')
     # y.delete_synonym('avtomalinovka')
     print(y.view_synonyms())
-

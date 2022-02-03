@@ -28,8 +28,8 @@ class Tag_counter:
                 "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                               "Chrome/95.0.4638.69 Safari/537.36",
                 "content-type": "text/html"}
-            if not re.search(r'https?://[a-zA-Z0-9_.-]+\.[a-zA-Z]+/?', url):
-                if not re.search(r'^https?://', url) and not re.search(r'\.[a-zA-Z]+/?$', url):
+            if not re.search(r'https?://[a-zA-Z0-9_.-]+\.[a-zA-Z][a-zA-Z][a-zA-Z][a-zA-Z]?/?', url):
+                if not re.search(r'^https?://', url) and not re.search(r'\.[a-zA-Z][a-zA-Z][a-zA-Z][a-zA-Z]?/?$', url):
                     try:
                         self.HOST = f"https://{url}.com"
                         requests.get(self.HOST, headers=headers)
@@ -42,7 +42,7 @@ class Tag_counter:
                                 self.logger.info(f"url that will be used: {self.HOST}")
                             except:
                                 self.logger.info(f"{self.HOST} cannot be opened")
-                elif re.search(r'\.[a-zA-Z]+/?$', url) and not re.search(r'^https?://', url):
+                elif re.search(r'\.[a-zA-Z][a-zA-Z][a-zA-Z][a-zA-Z]?/?$', url) and not re.search(r'^https?://', url):
                     try:
                         self.HOST = f"https://{url}"
                         requests.get(self.HOST, headers=headers)
@@ -54,7 +54,7 @@ class Tag_counter:
                             self.logger.info(f"url that will be used: {self.HOST}")
                         except:
                             self.logger.info(f"{self.HOST} cannot be opened")
-                elif re.search(r'^https?://', url) and not re.search(r'\.[a-zA-Z]+/?$', url):
+                elif re.search(r'^https?://', url) and not re.search(r'\.[a-zA-Z][a-zA-Z][a-zA-Z][a-zA-Z]?/?$', url):
                     try:
                         self.HOST = f"{url}.com"
                         requests.get(self.HOST, headers=headers)
