@@ -16,9 +16,11 @@ class Tag_counter:
 
         self.filepath = "synonyms.yaml"
 
+        # Get data from synonyms.yaml
         with open(self.filepath, "r") as f:
             self.data = yaml.safe_load(f)
 
+        # Check if key with the same name as URL exists in synonyms.yaml get [key]['synonym value']
         if url in self.data:
             self.HOST = self.data[url]['synonym_value']
             self.logger.info(f"Synonym {self.data[url]['synonym_value']} is applied instead of {url}")
@@ -39,9 +41,8 @@ class Tag_counter:
                             try:
                                 self.HOST = f"https://{url}{i}"
                                 requests.get(self.HOST, headers=headers)
-                                self.logger.info(f"url that will be used: {self.HOST}")
                             except:
-                                self.logger.info(f"{self.HOST} cannot be opened")
+                                self.logger.info(f"{self.HOST} cannot be reached")
                 elif re.search(r'\.[a-zA-Z][a-zA-Z][a-zA-Z][a-zA-Z]?/?$', url) and not re.search(r'^https?://', url):
                     try:
                         self.HOST = f"https://{url}"
@@ -84,13 +85,16 @@ class Tag_counter:
             self.logger.info(f"Unreachable website: {self.HOST}")
 
     def tags_to_dict(self):
-        """find all tags in the """
+        """get all tags from the url, sort them and save as dict in format {'tag_name':'tag_count'} across the html"""
+        # create list with all tags across the html
         tags_list = [tag.name for tag in self.soup.find_all(True)]
+        # count the tags, save as dict in certain format, logging this event and return dict to the following operations
         dict_with_tags_names_and_values = {i: tags_list.count(i) for i in sorted(set(tags_list))}
         self.logger.info(f"All tags have been successfully saved as dictionary as {dict_with_tags_names_and_values}")
         return dict_with_tags_names_and_values
 
     def site_name(self):
+        """Get 'title' from the website and return, if not exists return None"""
         try:
             name = self.soup.find('title').text
             self.logger.info(f"Site name is '{name}'")
@@ -99,6 +103,7 @@ class Tag_counter:
             return None
 
     def total_amount_of_tags(self):
+        """Get total amount of tags"""
         self.logger.info(f"Number of tags on the page is '{len(self.soup.find_all())}'")
         return len(self.soup.find_all())
 

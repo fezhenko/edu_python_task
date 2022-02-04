@@ -65,7 +65,7 @@ class Synonyms:
                     r"^https?://[a-zA-Z0-9_.-]+", value):
                 try:
                     updated_url = f"{value}.com"
-                    request=requests.get(updated_url, headers=self.headers)
+                    request = requests.get(updated_url, headers=self.headers)
                     if request.status_code == 200:
                         logging.info(f"URL:'{updated_url}' will be added with key:'{key}' to the list")
                         self.data[key] = {'synonym_name': key, 'synonym_value': updated_url,
@@ -226,9 +226,10 @@ class Synonyms:
                 logging.info(f"'{key}' is not in 'synonyms.yaml'")
 
     def view_synonyms(self):
+        """Return values from synonyms.yaml to use them at the frontend"""
         with open(self.filepath, 'r') as file:
             content = yaml.safe_load(file)
-            return content
+            return content.values()
 
 
 if __name__ == '__main__':
@@ -236,4 +237,6 @@ if __name__ == '__main__':
     # y.add_synonym('avtomalinovka', 'av')
     # y.update_synonym('avtomalinovka', 'av.by', 'av.by')
     # y.delete_synonym('avtomalinovka')
-    print(y.view_synonyms())
+    # print(y.view_synonyms())
+    # for row in y.view_synonyms():
+    #     print(f"'{row['synonym_name']}': {row['synonym_value']}")

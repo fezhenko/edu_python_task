@@ -4,7 +4,7 @@ from tkinter import messagebox
 from backend_db import Database
 from tag_counter import Tag_counter
 from yaml_reader import Synonyms
-from child_window_update_synonym import update_synonym_window,add_synonym_window
+from child_window_update_synonym import update_synonym_window, add_synonym_window
 
 
 class Window(object):
@@ -45,7 +45,7 @@ class Window(object):
         self.show_from_db_button.grid(row=2, column=1, sticky=W, pady=1)
 
         # create a button that get data from the entry fields in the special window and add it to the synonyms.yaml file
-        self.add_synonym_button = Button(window, text='Add Synonym', width=15,command=self.add_synonym_child_window)
+        self.add_synonym_button = Button(window, text='Add Synonym', width=15, command=self.add_synonym_child_window)
         self.add_synonym_button.grid(row=2, column=2, columnspan=2, sticky=E, pady=1)
 
         # label above the listbox
@@ -82,7 +82,7 @@ class Window(object):
         self.delete_synonym_button.grid(row=8, column=3, sticky=E, pady=1)
 
         # close the window
-        self.close_button = Button(window, text='Quit', width=15,command=self.window.destroy)
+        self.close_button = Button(window, text='Quit', width=15, command=self.window.destroy)
         self.close_button.grid(row=9, column=3, sticky=E, pady=1)
 
     def get_selected_row(self, event):
@@ -137,9 +137,10 @@ class Window(object):
             self.url_entry.delete(0, END)
 
     def view_synonyms(self):
+        """Show the certain values in the Listbox, value 'created' is not shown, but can be added via row['created']"""
         self.list1.delete(0, END)
         for row in self.syn.view_synonyms():
-            self.list1.insert(END, row)
+            self.list1.insert(END, f"'{row['synonym_name']}': {row['synonym_value']}")
 
     def search_synonyms(self):
         """take value from combobox field or from entry field and search it in the list of synonyms, return the message with related URL if exists"""
@@ -170,6 +171,7 @@ class Window(object):
 
     def add_synonym_child_window(self):
         add_synonym_window(self.window)
+
 
 
 window = Tk()
