@@ -5,6 +5,7 @@ from backend_db import Database
 from tag_counter import Tag_counter
 from yaml_reader import Synonyms
 from child_window_update_synonym import update_synonym_window, add_synonym_window
+import argparse
 
 
 class Window(object):
@@ -62,6 +63,7 @@ class Window(object):
 
         self.list1.configure(yscrollcommand=sb.set)
         sb.configure(command=self.list1.yview)
+
         self.list1.bind('<<ListboxSelect>>', self.get_listbox_row)
 
         # button that displays synonyms from the synonyms.yaml in the listbox
@@ -120,6 +122,8 @@ class Window(object):
             self.combo.update()
             messagebox.showinfo(f"Loaded tags", f"{tags} of the {t.HOST} has been loaded to DB")
             self.url_entry.delete(0, END)
+        else:
+            messagebox.showinfo('Error', 'Fill one of the fields and try again')
 
     def combobox_urls(self):
         return [row for row in self.d.view_urls()]
@@ -137,13 +141,17 @@ class Window(object):
             self.url_entry.delete(0, END)
 
     def view_synonyms(self):
-        """Show the certain values in the Listbox, value 'created' is not shown, but can be added via row['created']"""
+        """Fill the Listbox with Tuple, value 'created' is not
+         shown, but can be added via row['created']"""
         self.list1.delete(0, END)
         for row in self.syn.view_synonyms():
-            self.list1.insert(END, f"'{row['synonym_name']}': {row['synonym_value']}")
+            _row = (row['synonym_name'], row['synonym_value'])
+            self.list1.insert(END, _row)
+            # self.list1.insert(END, f"{row['synonym_name']}: {row['synonym_value']}")
 
     def search_synonyms(self):
-        """take value from combobox field or from entry field and search it in the list of synonyms, return the message with related URL if exists"""
+        """take value from combobox field or from entry field and search it in the list of synonyms, return the
+        message with related URL if exists"""
         if self.combo.get():
             if self.syn.check_synonym(self.combo.get()) is not None:
                 messagebox.showinfo("Synonym exists", self.syn.check_synonym(self.combo.get()))
@@ -166,14 +174,34 @@ class Window(object):
         update_synonym_window(self.window)
 
     def delete_synonym(self):
+        """Delete synonym, clear the Listbox and fill with updated rows"""
         self.syn.delete_synonym(selected_value)
-        self.list1.update()
+        messagebox.showinfo('Success', 'Synonym has been deleted')
+        self.list1.delete(0, END)
+        for row in self.syn.view_synonyms():
+            _row = (row['synonym_name'], row['synonym_value'])
+            self.list1.insert(END, _row)
+
 
     def add_synonym_child_window(self):
         add_synonym_window(self.window)
 
 
-
-window = Tk()
-Window(window)
-window.mainloop()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="get the dict with existed website's tags")
+    parser.add_argument('-g', '--get', type=str, help="get an amount of tags from the website")
+    parser.add_argument('-v', '--view', type=str, help="get an amount of tags from the DB")
+    args = parser.parse_args()
+    if args.get:
+        t = Tag_counter(args.get)
+        tags = t.tags_to_dict()
+        print(tags)
+    elif args.view:
+        t = Tag_counter(args.view)
+        d = Database()
+        tags = d.get_from_db(t.HOST)
+        print(tags)
+    else:
+        window = Tk()
+        Window(window)
+        window.mainloop()

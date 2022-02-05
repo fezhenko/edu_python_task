@@ -6,6 +6,8 @@ import pickle
 
 class Database:
     def __init__(self):
+        """Create connect to the database if exists, if not the sqlite database will be created as 'tag_counter.db'
+        file"""
         logging.basicConfig(format='%(asctime)s,%(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
                             level=logging.INFO, filename=f'tag_counter.log')
         self.conn = sqlite3.connect('tag_counter.db')
@@ -20,6 +22,8 @@ class Database:
         return rows
 
     def insert(self, tag_data, site_name="", url="", check_date=datetime.now().strftime('%Y-%m-%d %H:%M:%S')):
+        """Serialize the dict and put it into database as tag_data, site_name and URL as well, check_date is the date
+        when you use insert function """
         serialized = pickle.dumps(tag_data)
         self.curs.execute(f'SELECT url FROM tags WHERE url=?', (url,))
         if self.curs.fetchone() is None:
@@ -33,6 +37,7 @@ class Database:
         return serialized
 
     def get_from_db(self, url):
+        """Get serialized item from db, deserialize via 'pickle.loads' and return as dict"""
         self.curs.execute(f"SELECT tag_data FROM tags WHERE url=?", (url,))
         row = self.curs.fetchone()
         if row is None:
@@ -43,14 +48,14 @@ class Database:
             return deserialized
 
     def view_urls(self):
+        """Get all existed in DB URLs"""
         self.curs.execute("SELECT url FROM tags WHERE url IS NOT NULL")
         rows = self.curs.fetchall()
         return rows
-
 
     def __del__(self):
         self.conn.close()
 
 
 if __name__ == '__main__':
-    pass
+    Database()

@@ -3,8 +3,6 @@ from bs4 import BeautifulSoup
 import logging
 import yaml
 import re
-import argparse
-from backend_db import Database
 
 
 class Tag_counter:
@@ -89,7 +87,7 @@ class Tag_counter:
         # create list with all tags across the html
         tags_list = [tag.name for tag in self.soup.find_all(True)]
         # count the tags, save as dict in certain format, logging this event and return dict to the following operations
-        dict_with_tags_names_and_values = {i: tags_list.count(i) for i in sorted(set(tags_list))}
+        dict_with_tags_names_and_values = {i: tags_list.count(i) for i in sorted(set(tags_list), reverse=True)}
         self.logger.info(f"All tags have been successfully saved as dictionary as {dict_with_tags_names_and_values}")
         return dict_with_tags_names_and_values
 
@@ -107,31 +105,6 @@ class Tag_counter:
         self.logger.info(f"Number of tags on the page is '{len(self.soup.find_all())}'")
         return len(self.soup.find_all())
 
-    # def define_all_tags_names():
-    #     tags_list = [tag.name for tag in soup.find_all(True)]
-    #     dict_with_tags_names_and_values = {i: tags_list.count(i) for i in sorted(set(tags_list))}
-    #     print("All tags have been successfully saved as dictionary")
-    #     return dict_with_tags_names_and_values
-
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="get the dict with existed website's tags")
-    parser.add_argument('-g', '--get', type=str, help="get an amount of tags from the website")
-    parser.add_argument('-v', '--view', type=str, help="get an amount of tags from the DB")
-    args = parser.parse_args()
-
-    if args.get:
-        t = Tag_counter(args.get)
-        tags = t.tags_to_dict()
-        print(tags)
-    elif args.view:
-        t = Tag_counter(args.view)
-        d = Database()
-        tags = d.get_from_db(t.HOST)
-        print(tags)
-    else:
-        t = Tag_counter()
-        # d = Database()
-        # tags = t.tags_to_dict()
-        # sitename = t.site_name()
-        # a=d.insert(tags,sitename,t.HOST)
+    Tag_counter()

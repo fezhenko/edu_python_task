@@ -213,17 +213,17 @@ class Synonyms:
         else:
             logging.info(f"Synonym with name:{key} doesn't exist")
 
-    def delete_synonym(self, key):
+    def delete_synonym(self, synonym_name):
         with open(self.filepath, 'r') as file:
             content = yaml.safe_load(file)
             list_of_keys = list(content.keys())
-            if key in list_of_keys:
-                del content[key]
-                logging.info(f"'{key}' is deleted from 'synonyms.yaml'")
+            if synonym_name[0] in list_of_keys:
+                del content[synonym_name[0]]
+                logging.info(f"'{synonym_name[0]}' is deleted from 'synonyms.yaml'")
                 with open(self.filepath, 'w') as new_file:
                     yaml.dump(content, new_file)
             else:
-                logging.info(f"'{key}' is not in 'synonyms.yaml'")
+                logging.info(f"'{synonym_name[0]}' is not in 'synonyms.yaml'")
 
     def view_synonyms(self):
         """Return values from synonyms.yaml to use them at the frontend"""
