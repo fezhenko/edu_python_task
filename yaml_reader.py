@@ -233,10 +233,9 @@ class Synonyms:
 
 
 if __name__ == '__main__':
-    y = Synonyms()
+    pass
+    # y = Synonyms()
     # y.add_synonym('avtomalinovka', 'av')
     # y.update_synonym('avtomalinovka', 'av.by', 'av.by')
     # y.delete_synonym('avtomalinovka')
     # print(y.view_synonyms())
-    # for row in y.view_synonyms():
-    #     print(f"'{row['synonym_name']}': {row['synonym_value']}")

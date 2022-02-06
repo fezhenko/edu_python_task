@@ -107,4 +107,4 @@ class Tag_counter:
 
 
 if __name__ == '__main__':
-    Tag_counter()
+    pass

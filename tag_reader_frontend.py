@@ -46,8 +46,8 @@ class Window(object):
         self.show_from_db_button.grid(row=2, column=1, sticky=W, pady=1)
 
         # create a button that get data from the entry fields in the special window and add it to the synonyms.yaml file
-        self.add_synonym_button = Button(window, text='Add Synonym', width=15, command=self.add_synonym_child_window)
-        self.add_synonym_button.grid(row=2, column=2, columnspan=2, sticky=E, pady=1)
+        self.search_synonym_button = Button(window, text='Search Synonym', width=15, command=self.search_synonyms)
+        self.search_synonym_button.grid(row=2, column=2, columnspan=2, sticky=E, pady=1)
 
         # label above the listbox
         self.l1 = Label(window, text='List of Synonyms')
@@ -71,8 +71,8 @@ class Window(object):
         self.view_synonyms_button.grid(row=5, column=3, sticky=E, pady=1)
 
         # button that displays certain synonym by the entering value in the entry field
-        self.search_synonym_button = Button(window, text='Search Synonym', width=15, command=self.search_synonyms)
-        self.search_synonym_button.grid(row=6, column=3, sticky=E, pady=1)
+        self.add_synonym_button = Button(window, text='Add Synonym', width=15, command=self.add_synonym_child_window)
+        self.add_synonym_button.grid(row=6, column=3, sticky=E, pady=1)
 
         # update certain synonym's value in the synonyms.yaml
         self.update_synonym_button = Button(window, text='Update Synonym', width=15,
@@ -93,15 +93,24 @@ class Window(object):
 
     def get_listbox_row(self, event):
         """get the selected value from the listbox"""
-        global selected_value
-        index = self.list1.curselection()
-        selected_value = self.list1.get(index)
+        try:
+            global selected_value
+            index = self.list1.curselection()
+            selected_value = self.list1.get(index)
+        except:
+            # deal with error if listbox is empty
+            pass
 
     def load_command(self):
-        if self.combo.get():
+        """Get value from on of the fields and execute Tag_counter() with this value. Then get dictionary with tags
+        from the website if reachable and put it into tag_counter.db"""
+        if self.combo.get() and not self.url_entry.get():
+
+            # create progressbar
             for i in range(101):
                 self.pb.configure(value=i)
                 self.pb.update()
+
             t = Tag_counter(self.combo.get())
             tags = t.tags_to_dict()
             name = t.site_name()
@@ -110,7 +119,7 @@ class Window(object):
             self.combo.update()
             messagebox.showinfo(f"Loaded tags", f"{tags} of the {t.HOST} has been loaded to DB")
             self.combo.delete(0, END)
-        elif self.url_entry.get():
+        elif self.url_entry.get() and not self.combo.get():
             if self.url_entry.get():
                 for i in range(101):
                     self.pb.configure(value=i)
@@ -122,23 +131,33 @@ class Window(object):
             self.combo.update()
             messagebox.showinfo(f"Loaded tags", f"{tags} of the {t.HOST} has been loaded to DB")
             self.url_entry.delete(0, END)
+        elif not self.combo.get() and not self.url_entry.get():
+            messagebox.showinfo('Error', "Fill one of the fields and try again.")
         else:
-            messagebox.showinfo('Error', 'Fill one of the fields and try again')
+            messagebox.showinfo('Error', "A value from one field can be used, we cannot process two values in time. "
+                                         "Please fill only one field and try again.")
 
     def combobox_urls(self):
+        """Get URLs data from the database"""
         return [row for row in self.d.view_urls()]
 
     def show_from_db(self):
-        if self.combo.get():
+        """When a user clicks the View button and one of the  fields is filled take data from the database"""
+        if self.combo.get() and not self.url_entry.get():
             t = Tag_counter(self.combo.get())
             tags = self.d.get_from_db(t.HOST)
             messagebox.showinfo(f"Tags of the {t.HOST}", f"{tags}")
             self.combo.delete(0, END)
-        elif self.url_entry.get():
+        elif self.url_entry.get() and not self.combo.get():
             t = Tag_counter(self.url_entry.get())
             tags = self.d.get_from_db(t.HOST)
             messagebox.showinfo(f"{tags}")
             self.url_entry.delete(0, END)
+        elif not self.combo.get() and not self.url_entry.get():
+            messagebox.showinfo('Error', "Fill one of the fields and try again.")
+        else:
+            messagebox.showinfo('Error', "A value from one field can be used, we cannot process two values in time. "
+                                         "Please fill only one field and try again.")
 
     def view_synonyms(self):
         """Fill the Listbox with Tuple, value 'created' is not
@@ -170,6 +189,7 @@ class Window(object):
             messagebox.showinfo("Error", f"Fill the any field and try again")
 
     def update_synonym_child_window(self):
+        """Open child window to update a synonym"""
         # connect to child window
         update_synonym_window(self.window)
 
@@ -182,26 +202,25 @@ class Window(object):
             _row = (row['synonym_name'], row['synonym_value'])
             self.list1.insert(END, _row)
 
-
     def add_synonym_child_window(self):
+        """Open child window with fields to create synonym and add it to the synonyms.yaml file."""
         add_synonym_window(self.window)
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="get the dict with existed website's tags")
-    parser.add_argument('-g', '--get', type=str, help="get an amount of tags from the website")
-    parser.add_argument('-v', '--view', type=str, help="get an amount of tags from the DB")
-    args = parser.parse_args()
-    if args.get:
-        t = Tag_counter(args.get)
-        tags = t.tags_to_dict()
-        print(tags)
-    elif args.view:
-        t = Tag_counter(args.view)
-        d = Database()
-        tags = d.get_from_db(t.HOST)
-        print(tags)
-    else:
-        window = Tk()
-        Window(window)
-        window.mainloop()
+parser = argparse.ArgumentParser(description="get the dict with existed website's tags")
+parser.add_argument('-g', '--get', type=str, help="get an amount of tags from the website")
+parser.add_argument('-v', '--view', type=str, help="get an amount of tags from the DB")
+args = parser.parse_args()
+if args.get:
+    t = Tag_counter(args.get)
+    tags = t.tags_to_dict()
+    print(tags)
+elif args.view:
+    t = Tag_counter(args.view)
+    d = Database()
+    tags = d.get_from_db(t.HOST)
+    print(tags)
+else:
+    window = Tk()
+    Window(window)
+    window.mainloop()

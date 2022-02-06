@@ -58,4 +58,4 @@ class Database:
 
 
 if __name__ == '__main__':
-    Database()
+    pass
