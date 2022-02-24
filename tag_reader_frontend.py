@@ -6,6 +6,7 @@ from tag_counter import Tag_counter
 from yaml_reader import Synonyms
 from child_window_update_synonym import update_synonym_window, add_synonym_window
 import argparse
+import yaml
 
 
 class Window(object):
@@ -211,6 +212,7 @@ parser = argparse.ArgumentParser(description="get the dict with existed website'
 parser.add_argument('-g', '--get', type=str, help="get an amount of tags from the website")
 parser.add_argument('-v', '--view', type=str, help="get an amount of tags from the DB")
 args = parser.parse_args()
+
 if args.get:
     t = Tag_counter(args.get)
     tags = t.tags_to_dict()

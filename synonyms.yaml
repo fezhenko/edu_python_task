@@ -1,11 +1,3 @@
-aaaaaaa:
-  created: '2022-02-03 19:28:00'
-  synonym_name: aaaaaaa
-  synonym_value: https://aaaaaaaaaaa.com
-aaaaaaaaa:
-  created: '2022-02-03 19:31:58'
-  synonym_name: aaaaaaaaa
-  synonym_value: https://aaaaaaaaaaa.com
 another_one:
   created: '2022-02-03 19:49:02'
   synonym_name: another_one
@@ -14,14 +6,6 @@ apple:
   created: '2022-02-03 19:53:16'
   synonym_name: apple
   synonym_value: https://applestore.com
-bing(correct_url):
-  created: '2022-01-26 23:35:18'
-  synonym_name: bing(correct_url)
-  synonym_value: http://helloworld.com
-brand_new_synonym:
-  created: '2022-02-03 19:17:15'
-  synonym_name: brand_new_synonym
-  synonym_value: http://cambridge.biz
 ggl:
   created: '2022-01-09 20:12:41'
   synonym_name: ggl
@@ -38,30 +22,14 @@ google.com:
   created: '2022-01-09 20:12:41'
   synonym_name: google.com
   synonym_value: https://google.com
-helloworld:
-  created: '2022-01-26 23:38:57'
-  synonym_name: helloworld
-  synonym_value: http://helloworld.com
-just testing:
-  created: '2022-02-03 19:44:31'
-  synonym_name: just testing
-  synonym_value: http://cambridge.biz
 new:
   created: '2022-01-10 00:23:45'
   synonym_name: new
   synonym_value: https://google.by
-ogogogog:
-  created: '2022-02-03 19:49:20'
-  synonym_name: ogogogog
-  synonym_value: https://ogogogo.biz
 testing:
   created: '2022-02-03 19:12:03'
   synonym_name: yandex music
   synonym_value: https://music.yandex.com
-yandex:
-  created: '2022-01-09 20:12:41'
-  synonym_name: yandex
-  synonym_value: https://yandex.by
 yandex.by:
   created: '2022-01-09 20:12:41'
   synonym_name: yandex
