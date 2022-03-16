@@ -225,7 +225,7 @@ elif args.view:
 
 
 while True:
-    print("""To get list of tags type: "tagcounter --get yandex.by". To get saved data from DB: "tagcounter --view yandex.by" """)
+    print("""The app returns total amount of tags on a page and a descending sorted dictionary with unique tags and number of how many times a tag is present on a page. To get list of tags type: "tagcounter --get yandex.by". To get saved data from DB: "tagcounter --view yandex.by". Also the GUI version of the programm can be run if type anything except --get or --view.""")
     _input = input()
     print("executing... ")
     d = Database()
